@@ -3,10 +3,14 @@
 
 import math, os, time
 from ev3dev.ev3 import *
+# from ev3dev2.motor import LargeMotor, OUTPUT_A, OUTPUT_B, OUTPUT_C
+# from ev3dev2.sensor import INPUT_2, INPUT_3
+# from ev3dev2.sensor.lego import TouchSensor
+# from ev3dev2.motor import Motor
 
 from svg.parser import parse_path
 from svg.path import Line
-import evdev
+# import evdev
 
 class mymotor(Motor):
     def stop(self, stop_command='coast'):
@@ -438,35 +442,35 @@ class Writer():
         list_points = self.fit_path (self.read_svg (image_file))
         self.follow_path(list_points, max_speed=max_speed)
 
-    def follow_mouse (self):
-        devices = [evdev.InputDevice(fn) for fn in evdev.list_devices()]
-        for dev in devices:
-            if "Mouse" in  dev.name:
-                break
-        else:
-            print ("No mouse found. Please check usb input.")
-            return
-        posB, posA = self.mot_B.position, self.mot_A.position
-        ciblex, cibley = Writer.motorpos_to_coordinates (posB, posA)
-        self.pen_up()
-        while True:
-            try:
-                for event in dev.read():
-                    if (event.type == evdev.ecodes.EV_KEY and event.code == evdev.ecodes.BTN_LEFT):
-                        if (event.value):
-                            self.pen_down(wait=0)
-                        else:
-                            self.pen_up(wait=0)
-                    if (event.type == evdev.ecodes.EV_REL and event.code == evdev.ecodes.REL_X):
-                        ciblex -= event.value/100.
-                    if (event.type == evdev.ecodes.EV_REL and event.code == evdev.ecodes.REL_Y):
-                        cibley += event.value/100.
-            except:
-                pass
-            if (not self.set_speed_to_coordinates (ciblex,cibley,brake=1.0,max_speed = 100)):
-                self.mot_A.stop(stop_command='hold')
-                self.mot_B.stop(stop_command='hold')
-            time.sleep(0.1)
+    # def follow_mouse (self):
+    #     devices = [evdev.InputDevice(fn) for fn in evdev.list_devices()]
+    #     for dev in devices:
+    #         if "Mouse" in  dev.name:
+    #             break
+    #     else:
+    #         print ("No mouse found. Please check usb input.")
+    #         return
+    #     posB, posA = self.mot_B.position, self.mot_A.position
+    #     ciblex, cibley = Writer.motorpos_to_coordinates (posB, posA)
+    #     self.pen_up()
+    #     while True:
+    #         try:
+    #             for event in dev.read():
+    #                 if (event.type == evdev.ecodes.EV_KEY and event.code == evdev.ecodes.BTN_LEFT):
+    #                     if (event.value):
+    #                         self.pen_down(wait=0)
+    #                     else:
+    #                         self.pen_up(wait=0)
+    #                 if (event.type == evdev.ecodes.EV_REL and event.code == evdev.ecodes.REL_X):
+    #                     ciblex -= event.value/100.
+    #                 if (event.type == evdev.ecodes.EV_REL and event.code == evdev.ecodes.REL_Y):
+    #                     cibley += event.value/100.
+    #         except:
+    #             pass
+    #         if (not self.set_speed_to_coordinates (ciblex,cibley,brake=1.0,max_speed = 100)):
+    #             self.mot_A.stop(stop_command='hold')
+    #             self.mot_B.stop(stop_command='hold')
+    #         time.sleep(0.1)
 
 def main():
     wri = Writer(calibrate = True)
